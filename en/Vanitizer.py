@@ -35,6 +35,9 @@ class Vanitizer:
         noun_group, is_plural = self._create_noun_group()
         result += noun_group
         result += " " + self._create_verbal_group(is_plural)
+        result += " "
+        noun_group, is_plural = self._create_noun_group()
+        result += noun_group
         result += ", "
         result += random.choice(self.pos["conjunctions"])
         result += " "
