@@ -31,16 +31,20 @@ class Vanitizer:
         Creates a random sentence of given structure.
         :return: Sentence created.
         '''
-        result = self._create_noun_group()
-        result += " " + self._create_verbal_group()
+        result = ""
+        noun_group, is_plural = self._create_noun_group()
+        result += noun_group
+        result += " " + self._create_verbal_group(is_plural)
         result += ", "
         result += random.choice(self.pos["conjunctions"])
         result += " "
-        result += self._create_noun_group()
-        result += " " + self._create_verbal_group()
-        result += " " + self._create_noun_group()
+        noun_group, is_plural = self._create_noun_group()
+        result += noun_group
+        result += " " + self._create_verbal_group(is_plural)
+        noun_group, is_plural = self._create_noun_group()
+        result += " " + noun_group
 
-        return result
+        return result.capitalize() + "."
 
     def create_sentences(self, number_of_sentences: int) -> str:
         '''
@@ -80,9 +84,12 @@ class Vanitizer:
         if is_plural and det == 'that':
             det = 'those'
 
-        return (noun, det)
+        return (noun, det, is_plural)
 
     def _get_plural_noun(self, noun: str):
+        if len(noun) < 2:
+            return noun
+
         if noun == "child":
             return "children"
         elif noun == "sheep":
@@ -91,33 +98,39 @@ class Vanitizer:
             return "fish"
         elif noun == "aircraft":
             return "aircraft"
+        elif noun == "matrix":
+            return "matrices"
 
         if noun.endswith("y"):
             return noun[-1:] + "ies"
 
-        if noun.endswith("ch") or noun.endswith("sh"):
+        if noun.endswith("ch") or noun.endswith("sh") or noun.endswith("ss"):
             return noun + "es"
 
         else:
             return noun + "s"
 
     def _create_noun_group(self):
-        noun, det = self._create_det_noun()
+        noun, det, is_plural = self._create_det_noun()
 
         if random.random() > self.adjective_frequency:
             adjective = random.choice(self.pos["adjectives"])
         else:
             adjective = ""
 
-        return f"{det} {adjective} {noun}".strip().replace("  ", " ")
+        return (f"{det} {adjective} {noun}".strip().replace("  ", " "), is_plural)
 
-    def _create_verbal_group(self):
+    def _create_verbal_group(self, is_plural):
         result = ""
 
         if random.random() > 0.25:
             result += f"{random.choice(self.pos['adverbs'])}"
 
         is_third_person = random.random() > self.verb_third_person_frequency
+
+        if is_plural:
+            is_third_person = False
+
         is_past_tense = random.random() > self.verb_past_frequency
 
         verb = random.choice(self.pos["verb_forms"])
