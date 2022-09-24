@@ -102,7 +102,10 @@ class Vanitizer:
             return "matrices"
 
         if noun.endswith("y"):
-            return noun[-1:] + "ies"
+            return noun[:-1] + "ies"
+
+        if noun.endswith("is"):
+            return noun[:-2] + "es"
 
         if noun.endswith("ch") or noun.endswith("sh") or noun.endswith("ss"):
             return noun + "es"
