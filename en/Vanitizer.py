@@ -9,6 +9,7 @@ class Vanitizer:
     def __init__(self):
         self.pos = {}
         self._vowels = "aeiou"
+        self._consonants = "bcdfghjklmnpqrstvwxyz"
         self.plural_noun_frequency = 0.5    # Probability with which to create plural nouns vs singular.
         self.determinant_frequency = 0.5    # Probability with which nouns get determinants
         self.adjective_frequency = 0.5      # Probability with which nouns get adjectives
@@ -81,6 +82,9 @@ class Vanitizer:
         if det == 'a' and noun[0] in self._vowels:
             det = 'an'
 
+        if det == 'an' and noun[0] in self._consonants:
+            det = 'a'
+
         if is_plural and det == 'this':
             det = 'these'
 
@@ -112,6 +116,12 @@ class Vanitizer:
 
         if noun.endswith("ch") or noun.endswith("sh") or noun.endswith("ss"):
             return noun + "es"
+
+        if noun.endswith("fe"): # knife, wife
+            return noun[:-2] + "ves"
+
+        if noun.endswith("f"): # hoof
+            return noun[:-1] + "ves"
 
         else:
             return noun + "s"
